@@ -1,0 +1,20 @@
+#!/bin/sh
+set -x
+burn() {
+cdrecord -v -tao dev=/dev/dvd driveropts=burnfree -pad -audio *.wav
+echo "finished burning, would you like to delete the waves files? yes/no"
+read yes
+cond=yes
+until [ "$cond" = "$yes" ]
+do
+    burn
+done
+rm *.wav
+}
+for i in *.[MmOoMm][PpGg4][3GgAa]; do mv "${i}" "${i// /_}"; done
+for i in *.[MmOoMm][PpGg4][3GgAa]; do lame --decode $i ${i/.mp3}.wav; done
+normalize *.wav
+burn
+exit $?
+
+
