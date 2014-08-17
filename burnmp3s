@@ -1,20 +1,22 @@
-#!/bin/sh
-set -x
+#!/bin/bash
+
 burn() {
-cdrecord -v -tao dev=/dev/dvd driveropts=burnfree -pad -audio *.wav
-echo "finished burning, would you like to delete the waves files? yes/no"
-read yes
-cond=yes
-until [ "$cond" = "$yes" ]
-do
+  cdrecord -v -tao dev=/dev/dvd driveropts=burnfree -pad -audio *.wav
+
+  echo "Finished burning, would you like to delete the waves files? yes/no"
+  read answer
+
+  until [ yes = "$answer" ]; do
     burn
-done
-rm *.wav
+  done
+
+  rm *.wav
 }
-for i in *.[MmOoMm][PpGg4][3GgAa]; do mv "${i}" "${i// /_}"; done
-for i in *.[MmOoMm][PpGg4][3GgAa]; do lame --decode $i ${i/.mp3}.wav; done
-normalize *.wav
-burn
-exit $?
 
+for mp3 in *.[MmOoMm][PpGg4][3GgAa]; do
+  mv "$mp3" "${mp3// /_}"
 
+  lame --decode "$mp3" ${mp3/.mp3}.wav
+  normalize *.wav
+  burn
+done
